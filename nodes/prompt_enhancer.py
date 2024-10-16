@@ -141,11 +141,10 @@ class BedrockPromptEnhancer:
             else:
                 # Default handling, assuming Amazon Titan or other models
                 bedrock_prompt = {
-                    "inputText": f"Improve the following prompt for better image generation:\n\n{prompt}",
-                    "textGenerationConfig": {
-                        "maxTokenCount": 500,
-                        "temperature": 0.7
-                    }
+                    "dialogue": [
+                        {"role": "system", "content": f"Improve the following prompt for better image generation",},
+                        {"role": "user", "content": f"{prompt}"
+                    ]
                 }
 
             # Call the Bedrock model
