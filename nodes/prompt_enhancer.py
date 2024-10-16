@@ -89,8 +89,91 @@ class PromptEnhancerWithConditioning:
             return (f"Error: {str(e)}", conditioning)
 
 
+class BedrockPromptEnhancer:
+    """
+    A ComfyUI custom node that enhances a prompt using AWS Bedrock models.
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "prompt": ("STRING", {"multiline": True}),
+                "aws_access_key_id": ("STRING", {"multiline": False}),
+                "aws_secret_access_key": ("STRING", {"multiline": False}),
+                "aws_region": ("STRING", {"multiline": False}),
+                "model_id": ("STRING", {"default": "anthropic.claude-v2"}),  # Default model
+            }
+        }
+
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "enhance_prompt"
+    CATEGORY = "Utilities"
+
+    def enhance_prompt(self, prompt, aws_access_key_id, aws_secret_access_key, aws_region, model_id):
+        try:
+            # Initialize the Bedrock client
+            bedrock_client = boto3.client(
+                service_name='bedrock',
+                region_name=aws_region,
+                aws_access_key_id=aws_access_key_id,
+                aws_secret_access_key=aws_secret_access_key,
+            )
+
+            # Prepare the prompt for the model
+            if model_id.startswith("anthropic"):
+                # For Anthropic models like Claude
+                bedrock_prompt = {
+                    "prompt": f"\n\nHuman: Improve the following prompt for better image generation:\n\n{prompt}\n\nAssistant:",
+                    "max_tokens_to_sample": 500,
+                    "temperature": 0.7,
+                    "stop_sequences": ["\n\nHuman:"]
+                }
+            elif model_id.startswith("ai21"):
+                # For AI21 models like Jurassic-2
+                bedrock_prompt = {
+                    "prompt": f"Improve the following prompt for better image generation:\n\n{prompt}",
+                    "maxTokens": 500,
+                    "temperature": 0.7,
+                    "stopSequences": []
+                }
+            else:
+                # Default handling, assuming Amazon Titan or other models
+                bedrock_prompt = {
+                    "inputText": f"Improve the following prompt for better image generation:\n\n{prompt}",
+                    "textGenerationConfig": {
+                        "maxTokenCount": 500,
+                        "temperature": 0.7
+                    }
+                }
+
+            # Call the Bedrock model
+            response = bedrock_client.invoke_model(
+                modelId=model_id,
+                accept='application/json',
+                contentType='application/json',
+                body=json.dumps(bedrock_prompt)
+            )
+
+            # Parse the response
+            response_body = response['body'].read()
+            response_json = json.loads(response_body)
+
+            if model_id.startswith("anthropic"):
+                enhanced_prompt = response_json.get('completion', '').strip()
+            elif model_id.startswith("ai21"):
+                enhanced_prompt = response_json['completions'][0]['data']['text'].strip()
+            else:
+                # Default parsing for other models
+                enhanced_prompt = response_json.get('results', [{}])[0].get('outputText', '').strip()
+
+            return (enhanced_prompt,)
+
+        except Exception as e:
+            return (f"Error: {str(e)}",)
+
 # Register the node with ComfyUI
 NODE_CLASS_MAPPINGS = {
     "Prompt Enhancer": PromptEnhancer,
-    "Prompt Enhancer with Conditioning": PromptEnhancerWithConditioning
+    "Prompt Enhancer with Conditioning": PromptEnhancerWithConditioning,
+    "Bedrock - Prompt Enhancer": BedrockPromptEnhancer
 }
