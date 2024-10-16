@@ -32,7 +32,7 @@ class PromptEnhancer:
                 n=1,
                 stop=None,
             )
-            print(Called OpenAI)
+            print("Called OpenAI")
 
             print(response.choices[0])
 
