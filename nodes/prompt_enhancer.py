@@ -32,11 +32,8 @@ class PromptEnhancer:
                 ],
                 model="gpt-3.5-turbo",
             )
-            print("Called OpenAI")
 
-            print(response)
             enhanced_prompt = response.choices[0].message.content
-            print(enhanced_prompt)
             return (enhanced_prompt,)
 
         except Exception as e:
@@ -80,7 +77,7 @@ class PromptEnhancerWithConditioning:
                 model="gpt-3.5-turbo",
             )
 
-            enhanced_prompt = response.choices[0].text.strip()
+            enhanced_prompt = response.choices[0].message.content
 
             # Generate new conditioning using the CLIPTextEncode node
             clip_text_encoder = CLIPTextEncode()
