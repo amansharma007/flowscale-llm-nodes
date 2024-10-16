@@ -23,6 +23,7 @@ class PromptEnhancer:
 
         try:
             # Use the OpenAI API to enhance the prompt
+            print("Calling OpenAI")
             response = openai.Completion.create(
                 model="text-davinci-003",
                 prompt=f"Improve the following prompt for better image generation:\n\n{prompt}",
@@ -31,6 +32,7 @@ class PromptEnhancer:
                 n=1,
                 stop=None,
             )
+            print(Called OpenAI)
 
             print(response.choices[0])
 
@@ -39,6 +41,8 @@ class PromptEnhancer:
             return (enhanced_prompt,)
 
         except Exception as e:
+            print("Ran into issues")
+            print(str(e))
             return (f"Error: {str(e)}",)
 
 class PromptEnhancerWithConditioning:
