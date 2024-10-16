@@ -35,7 +35,7 @@ class PromptEnhancer:
             print("Called OpenAI")
 
             print(response)
-            enhanced_prompt = response.choices[0].text.strip()
+            enhanced_prompt = response.choices[0].message.content
             print(enhanced_prompt)
             return (enhanced_prompt,)
 
