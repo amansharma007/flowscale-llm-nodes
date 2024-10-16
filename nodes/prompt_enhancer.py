@@ -23,7 +23,7 @@ class PromptEnhancer:
         )
 
         try:
-            chat_completion = client.chat.completions.create(
+            response = client.chat.completions.create(
                 messages=[
                     {
                         "role": "user",
@@ -34,8 +34,7 @@ class PromptEnhancer:
             )
             print("Called OpenAI")
 
-            print(response.choices[0])
-
+            print(response)
             enhanced_prompt = response.choices[0].text.strip()
             print(enhanced_prompt)
             return (enhanced_prompt,)
