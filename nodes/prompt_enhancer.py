@@ -112,7 +112,7 @@ class BedrockPromptEnhancer:
     FUNCTION = "enhance_prompt"
     CATEGORY = "Utilities"
 
-    def enhance_prompt(self, prompt, aws_access_key_id, aws_secret_access_key, aws_region, model_id):
+    def enhance_prompt(self, base_prompt, prompt, aws_access_key_id, aws_secret_access_key, aws_region, model_id):
         try:
             # Initialize the Bedrock client
             bedrock_client = boto3.client(
