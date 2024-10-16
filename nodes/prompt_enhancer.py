@@ -1,4 +1,5 @@
 from openai import OpenAI
+import boto3
 
 class PromptEnhancer:
     """
