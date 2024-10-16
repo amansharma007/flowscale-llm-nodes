@@ -140,19 +140,23 @@ class BedrockPromptEnhancer:
                 }
             else:
                 # Default handling, assuming Amazon Titan or other models
-                bedrock_prompt = {
-                    "dialogue": [
-                        {"role": "system", "content": f"Improve the following prompt for better image generation",},
-                        {"role": "user", "content": f"{prompt}"}
-                    ]
-                }
+                bedrock_prompt = f"\n\nHuman: Improve the following prompt for better image generation:\n\{prompt}\n\nAssistant:"
+
+            body = json.dumps({
+                "prompt": bedrock_prompt,
+                "temperature": 0.7,
+                "top_p": 1,
+                "top_k": 250,
+                "max_tokens_to_sample": 200,
+                "stop_sequences": ["\n\nHuman:"]
+            })
 
             # Call the Bedrock model
             response = bedrock_client.invoke_model(
                 modelId=model_id,
                 accept='application/json',
                 contentType='application/json',
-                body=json.dumps(bedrock_prompt)
+                body=body
             )
 
             # Parse the response
