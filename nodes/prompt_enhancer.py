@@ -142,7 +142,7 @@ class BedrockPromptEnhancer:
                 # Default handling, assuming Amazon Titan or other models
                 bedrock_prompt = f"\n\nHuman: Improve the following prompt for better image generation:\n\{prompt}\n\nAssistant:"
 
-             body = json.dumps({
+            body = json.dumps({
                 "inputText": f"Improve the following prompt for better image generation:\n\n{prompt}",
                 "textGenerationConfig": {
                     "maxTokenCount": 500,
@@ -152,7 +152,7 @@ class BedrockPromptEnhancer:
                     "stopSequences": []
                 }
             })
-            
+
             # Call the Bedrock model
             response = bedrock_client.invoke_model(
                 modelId=model_id,
