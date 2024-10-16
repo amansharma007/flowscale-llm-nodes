@@ -143,7 +143,7 @@ class BedrockPromptEnhancer:
                 bedrock_prompt = {
                     "dialogue": [
                         {"role": "system", "content": f"Improve the following prompt for better image generation",},
-                        {"role": "user", "content": f"{prompt}"
+                        {"role": "user", "content": f"{prompt}"}
                     ]
                 }
 
