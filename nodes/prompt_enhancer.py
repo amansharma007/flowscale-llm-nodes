@@ -147,14 +147,14 @@ class BedrockPromptEnhancer:
             body = json.dumps({
                 "prompt": formatted_prompt,
                 "temperature": 0.7,
-                "max_tokens_to_sample": 200,
+                "max_tokens": 400,
+                "top_p": 0.7,
+                "top_k": 50
             })
 
             # Call the Bedrock model
             response = bedrock_client.invoke_model(
                 modelId=model_id,
-                accept='application/json',
-                contentType='application/json',
                 body=body
             )
 
@@ -162,13 +162,15 @@ class BedrockPromptEnhancer:
             response_body = response['body'].read()
             response_json = json.loads(response_body)
 
+            print(response_json)
+
             if model_id.startswith("anthropic"):
                 enhanced_prompt = response_json.get('completion', '').strip()
             elif model_id.startswith("ai21"):
                 enhanced_prompt = response_json['completions'][0]['data']['text'].strip()
             else:
                 # Default parsing for other models
-                enhanced_prompt = response_json.get('results', [{}])[0].get('outputText', '').strip()
+                enhanced_prompt = response_json.get('outputs')
 
             return (enhanced_prompt,)
 
