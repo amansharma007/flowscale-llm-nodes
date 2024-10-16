@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 
 class PromptEnhancer:
     """
@@ -18,19 +18,19 @@ class PromptEnhancer:
     CATEGORY = "Utilities"
 
     def enhance_prompt(self, prompt, openai_api_key):
-        openai.api_key = openai_api_key
-        print(openai.api_key)
+        client = OpenAI(
+            api_key = openai_api_key
+        )
 
         try:
-            # Use the OpenAI API to enhance the prompt
-            print("Calling OpenAI")
-            response = openai.Completion.create(
-                model="text-davinci-003",
-                prompt=f"Improve the following prompt for better image generation:\n\n{prompt}",
-                max_tokens=10000,
-                temperature=0.7,
-                n=1,
-                stop=None,
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"Improve the following prompt for better image generation:\n\n{prompt}"
+                    }
+                ],
+                model="gpt-3.5-turbo",
             )
             print("Called OpenAI")
 
@@ -66,17 +66,19 @@ class PromptEnhancerWithConditioning:
     CATEGORY = "Utilities"
 
     def enhance_prompt_with_conditioning(self, prompt, conditioning, openai_api_key):
-        openai.api_key = openai_api_key
+        client = OpenAI(
+            api_key = openai_api_key
+        )
 
         try:
-            # Use the OpenAI API to enhance the prompt
-            response = openai.Completion.create(
-                model="text-davinci-003",
-                prompt=f"Improve the following prompt for better image generation:\n\n{prompt}",
-                max_tokens=10000,
-                temperature=0.7,
-                n=1,
-                stop=None,
+            chat_completion = client.chat.completions.create(
+                messages=[
+                    {
+                        "role": "user",
+                        "content": f"Improve the following prompt for better image generation:\n\n{prompt}"
+                    }
+                ],
+                model="gpt-3.5-turbo",
             )
 
             enhanced_prompt = response.choices[0].text.strip()
