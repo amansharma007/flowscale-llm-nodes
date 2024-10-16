@@ -24,15 +24,15 @@ class PromptEnhancer:
         try:
             # Use the OpenAI API to enhance the prompt
             response = openai.Completion.create(
-                engine="text-davinci-003",
+                model="text-davinci-003",
                 prompt=f"Improve the following prompt for better image generation:\n\n{prompt}",
-                max_tokens=100,
+                max_tokens=10000,
                 temperature=0.7,
                 n=1,
                 stop=None,
             )
 
-            print(response)
+            print(response.choices[0])
 
             enhanced_prompt = response.choices[0].text.strip()
             print(enhanced_prompt)
@@ -67,9 +67,9 @@ class PromptEnhancerWithConditioning:
         try:
             # Use the OpenAI API to enhance the prompt
             response = openai.Completion.create(
-                engine="text-davinci-003",
+                model="text-davinci-003",
                 prompt=f"Improve the following prompt for better image generation:\n\n{prompt}",
-                max_tokens=100,
+                max_tokens=10000,
                 temperature=0.7,
                 n=1,
                 stop=None,
