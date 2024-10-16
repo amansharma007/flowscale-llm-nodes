@@ -101,10 +101,8 @@ class BedrockPromptEnhancer:
             "required": {
                 "base_prompt": ("STRING", {"multiline": True}),
                 "prompt": ("STRING", {"multiline": True}),
-                "aws_access_key_id": ("STRING", {"multiline": False}),
-                "aws_secret_access_key": ("STRING", {"multiline": False}),
-                "aws_region": ("STRING", {"multiline": False}),
-                "model_id": ("STRING", {"default": "anthropic.claude-v2"}),  # Default model
+                "one": ("STRING", {"multiline": False}),
+                "two": ("STRING", {"multiline": False}),
             }
         }
 
@@ -112,18 +110,19 @@ class BedrockPromptEnhancer:
     FUNCTION = "enhance_prompt"
     CATEGORY = "Utilities"
 
-    def enhance_prompt(self, base_prompt, prompt, aws_access_key_id, aws_secret_access_key, aws_region, model_id):
+    def enhance_prompt(self, base_prompt, prompt, one, two):
+        model = "mistral.mixtral-8x7b-instruct-v0:1"
         try:
             # Initialize the Bedrock client
             bedrock_client = boto3.client(
                 service_name='bedrock-runtime',
-                region_name=aws_region,
-                aws_access_key_id=aws_access_key_id,
-                aws_secret_access_key=aws_secret_access_key,
+                region_name="us-east-1",
+                aws_access_key_id=one,
+                aws_secret_access_key=two,
             )
 
             # Prepare the prompt for the model
-            if model_id.startswith("anthropic"):
+            if model.startswith("anthropic"):
                 # For Anthropic models like Claude
                 bedrock_prompt = {
                     "prompt": f"\n\nHuman: {base_prompt}:\n\n{prompt}\n\nAssistant:",
@@ -131,7 +130,7 @@ class BedrockPromptEnhancer:
                     "temperature": 0.7,
                     "stop_sequences": ["\n\nHuman:"]
                 }
-            elif model_id.startswith("ai21"):
+            elif model.startswith("ai21"):
                 # For AI21 models like Jurassic-2
                 bedrock_prompt = {
                     "prompt": f"{base_prompt}:\n\n{prompt}",
@@ -155,7 +154,7 @@ class BedrockPromptEnhancer:
 
             # Call the Bedrock model
             response = bedrock_client.invoke_model(
-                modelId=model_id,
+                modelId=model,
                 body=body
             )
 
@@ -165,9 +164,9 @@ class BedrockPromptEnhancer:
 
             print(response_json)
 
-            if model_id.startswith("anthropic"):
+            if model.startswith("anthropic"):
                 enhanced_prompt = response_json.get('completion', '').strip()
-            elif model_id.startswith("ai21"):
+            elif model.startswith("ai21"):
                 enhanced_prompt = response_json['completions'][0]['data']['text'].strip()
             else:
                 # Default parsing for other models
