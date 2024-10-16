@@ -99,6 +99,7 @@ class BedrockPromptEnhancer:
     def INPUT_TYPES(cls):
         return {
             "required": {
+                "base_prompt": ("STRING", {"multiline": True}),
                 "prompt": ("STRING", {"multiline": True}),
                 "aws_access_key_id": ("STRING", {"multiline": False}),
                 "aws_secret_access_key": ("STRING", {"multiline": False}),
@@ -125,7 +126,7 @@ class BedrockPromptEnhancer:
             if model_id.startswith("anthropic"):
                 # For Anthropic models like Claude
                 bedrock_prompt = {
-                    "prompt": f"\n\nHuman: Improve the following prompt for better image generation:\n\n{prompt}\n\nAssistant:",
+                    "prompt": f"\n\nHuman: {base_prompt}:\n\n{prompt}\n\nAssistant:",
                     "max_tokens_to_sample": 500,
                     "temperature": 0.7,
                     "stop_sequences": ["\n\nHuman:"]
@@ -133,16 +134,16 @@ class BedrockPromptEnhancer:
             elif model_id.startswith("ai21"):
                 # For AI21 models like Jurassic-2
                 bedrock_prompt = {
-                    "prompt": f"Improve the following prompt for better image generation:\n\n{prompt}",
+                    "prompt": f"{base_prompt}:\n\n{prompt}",
                     "maxTokens": 500,
                     "temperature": 0.7,
                     "stopSequences": []
                 }
             else:
                 # Default handling, assuming Amazon Titan or other models
-                bedrock_prompt = f"Exhance the following prompt for better image generation in Stable Diffusion: {prompt}"
+                bedrock_prompt = f"{base_prompt}: {prompt}"
 
-            formatted_prompt = f"<s>[INST] {prompt} [/INST]"
+            formatted_prompt = f"<s>[INST] {bedrock_prompt} [/INST]"
 
             body = json.dumps({
                 "prompt": formatted_prompt,
