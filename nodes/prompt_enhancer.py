@@ -140,7 +140,7 @@ class BedrockPromptEnhancer:
                 }
             else:
                 # Default handling, assuming Amazon Titan or other models
-                bedrock_prompt = f"Improve the following prompt for better image generation:\n\{prompt}"
+                bedrock_prompt = f"Exhance the following prompt for better image generation in Stable Diffusion: {prompt}"
 
             formatted_prompt = f"<s>[INST] {prompt} [/INST]"
 
@@ -170,7 +170,7 @@ class BedrockPromptEnhancer:
                 enhanced_prompt = response_json['completions'][0]['data']['text'].strip()
             else:
                 # Default parsing for other models
-                enhanced_prompt = response_json.get('outputs')
+                enhanced_prompt = response_json.get('outputs')[0]['text']
 
             return (enhanced_prompt,)
 
