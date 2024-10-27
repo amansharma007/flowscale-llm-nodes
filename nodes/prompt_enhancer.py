@@ -16,6 +16,7 @@ class PromptEnhancer:
     def INPUT_TYPES(cls):
         return {
             "required": {
+                "base_prompt": ("STRING", {"multiline": True}),
                 "prompt": ("STRING", {"multiline": True}),
             }
         }
@@ -24,7 +25,7 @@ class PromptEnhancer:
     FUNCTION = "enhance_prompt"
     CATEGORY = "Utilities"
 
-    def enhance_prompt(self, prompt):
+    def enhance_prompt(self, prompt, base_prompt):
         client = OpenAI(
             api_key = OPENAI_API_KEY
         )
@@ -34,7 +35,7 @@ class PromptEnhancer:
                 messages=[
                     {
                         "role": "user",
-                        "content": f"Improve the following prompt for better image generation:\n\n{prompt}"
+                        "content": f"{base_prompt}\n\n{prompt}"
                     }
                 ],
                 model="gpt-3.5-turbo",
