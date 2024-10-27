@@ -1,6 +1,12 @@
 from openai import OpenAI
 import boto3
 import json
+import os
+
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_S3_SECRET_ACCESS_KEY")
+AWS_REGION = os.environ.get("AWS_S3_REGION", "us-east-1")
+OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 class PromptEnhancer:
     """
@@ -11,7 +17,6 @@ class PromptEnhancer:
         return {
             "required": {
                 "prompt": ("STRING", {"multiline": True}),
-                "openai_api_key": ("STRING", {"multiline": False}),
             }
         }
 
@@ -19,9 +24,9 @@ class PromptEnhancer:
     FUNCTION = "enhance_prompt"
     CATEGORY = "Utilities"
 
-    def enhance_prompt(self, prompt, openai_api_key):
+    def enhance_prompt(self, prompt):
         client = OpenAI(
-            api_key = openai_api_key
+            api_key = OPENAI_API_KEY
         )
 
         try:
@@ -54,7 +59,6 @@ class PromptEnhancerWithConditioning:
             "required": {
                 "prompt": ("STRING", {"multiline": True}),
                 "conditioning": ("CONDITIONING", ),
-                "openai_api_key": ("STRING", {"multiline": False}),
             }
         }
 
@@ -63,9 +67,9 @@ class PromptEnhancerWithConditioning:
     FUNCTION = "enhance_prompt_with_conditioning"
     CATEGORY = "Utilities"
 
-    def enhance_prompt_with_conditioning(self, prompt, conditioning, openai_api_key):
+    def enhance_prompt_with_conditioning(self, prompt, conditioning):
         client = OpenAI(
-            api_key = openai_api_key
+            api_key = OPENAI_API_KEY
         )
 
         try:
@@ -90,7 +94,6 @@ class PromptEnhancerWithConditioning:
         except Exception as e:
             return (f"Error: {str(e)}", conditioning)
 
-
 class BedrockPromptEnhancer:
     """
     A ComfyUI custom node that enhances a prompt using AWS Bedrock models.
@@ -101,8 +104,6 @@ class BedrockPromptEnhancer:
             "required": {
                 "base_prompt": ("STRING", {"multiline": True}),
                 "prompt": ("STRING", {"multiline": True}),
-                "one": ("STRING", {"multiline": False}),
-                "two": ("STRING", {"multiline": False}),
             }
         }
 
@@ -110,15 +111,15 @@ class BedrockPromptEnhancer:
     FUNCTION = "enhance_prompt"
     CATEGORY = "Utilities"
 
-    def enhance_prompt(self, base_prompt, prompt, one, two):
+    def enhance_prompt(self, base_prompt, prompt):
         model = "mistral.mixtral-8x7b-instruct-v0:1"
         try:
             # Initialize the Bedrock client
             bedrock_client = boto3.client(
                 service_name='bedrock-runtime',
                 region_name="us-east-1",
-                aws_access_key_id=one,
-                aws_secret_access_key=two,
+                aws_access_key_id=AWS_ACCESS_KEY_ID,
+                aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
             )
 
             # Prepare the prompt for the model
