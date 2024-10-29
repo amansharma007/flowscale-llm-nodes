@@ -178,10 +178,41 @@ class BedrockPromptEnhancer:
 
         except Exception as e:
             return (f"Error: {str(e)}",)
+        
+class StringConcatenate:
+    """
+    A ComfyUI custom node that allows you to concatenate multiple string inputs
+    """
+    @classmethod
+    def INPUT_TYPES(cls):
+        return {
+            "required": {
+                "text_a": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "text_b": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            },
+            "optional": {
+                "text_c": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "text_d": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "text_e": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "text_f": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+                "text_g": ("STRING", {"forceInput": True, "multiline": True, "default": ""}),
+            }
+        }
+    RETURN_TYPES = ("STRING",)
+    FUNCTION = "concatenate_strings"
+
+    CATEGORY = "Utilities"
+
+    def concatenate_strings(self, text_a, text_b, text_c="", text_d="", text_e="", text_f="", text_g=""):
+
+        text_list = f'{text_a}\n{text_b}\n{text_c}\n{text_d}\n{text_e}\n{text_f}\n{text_g}'
+
+        return (text_list,)
 
 # Register the node with ComfyUI
 NODE_CLASS_MAPPINGS = {
     "Prompt Enhancer": PromptEnhancer,
     "Prompt Enhancer with Conditioning": PromptEnhancerWithConditioning,
-    "Bedrock - Prompt Enhancer": BedrockPromptEnhancer
+    "Bedrock - Prompt Enhancer": BedrockPromptEnhancer,
+    "String Concat": StringConcatenate
 }
